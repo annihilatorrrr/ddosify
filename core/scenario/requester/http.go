@@ -299,7 +299,6 @@ func (h *HttpRequester) Send(envs map[string]interface{}) (res *types.ScenarioSt
 }
 
 func (h *HttpRequester) prepareReq(envs map[string]interface{}, trace *httptrace.ClientTrace) (*http.Request, error) {
-	re := regexp.MustCompile(regex.DynamicVariableRegex)
 	httpReq := h.request.Clone(h.ctx)
 	var err error
 	// body
@@ -343,10 +342,10 @@ func (h *HttpRequester) prepareReq(envs map[string]interface{}, trace *httptrace
 			for _, v := range values {
 				kk := k
 				vv := v
-				if re.MatchString(v) {
+				if h.dynamicRgx.MatchString(v) {
 					vv, _ = h.ei.InjectDynamic(v)
 				}
-				if re.MatchString(k) {
+				if h.dynamicRgx.MatchString(k) {
 					kk, _ = h.ei.InjectDynamic(k)
 					httpReq.Header.Del(k)
 				}
